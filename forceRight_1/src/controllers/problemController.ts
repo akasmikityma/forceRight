@@ -28,7 +28,7 @@ import { Prisma } from "@prisma/client";
         res.status(201).json({
             msg: `a track has been created with id ${newTrack_pr.id}` 
         })
-    }catch(err){
+    }catch(err:any){
         console.log(err);
         res.status(500).json({
             msg:" Internal Server Error "
@@ -59,7 +59,7 @@ export const getMyproblemTracks =async(req:Request,res:Response)=>{
                 tracks : tracks
             })
         }
-    }catch(err){
+    }catch(err:any){
         console.log(err);
         res.status(500).json({
             msg:"Internal Server Error"
@@ -86,7 +86,7 @@ export const getMyspecificTrack=async(req:Request ,res:Response) =>{
                 track: the_track
             })
         }
-    }catch(err){
+    }catch(err:any){
         console.log(err);
         res.status(500).json({
             msg:"Internal Server Error"
@@ -114,7 +114,7 @@ export const getRatingsEachDate=async(req:Request,res:Response)=>{
         res.status(200).json({
             rating_data:Rating_data
         })
-    }catch(err){
+    }catch(err:any){
         console.log(err)
         res.status(500).json({
             msg:"Internal Server Error"
@@ -146,7 +146,7 @@ export const getProblemsByDate = async(req:Request,res:Response)=>{
         res.status(200).json({
             tracks:prByData
         })
-    }catch(err){
+    }catch(err:any){
         console.log(err);
         res.status(500).json({
             msg:"Internal Server Error"
@@ -174,7 +174,7 @@ export const updateMySpecificTrack = async (req: Request, res: Response) => {
             msg: "Track updated successfully",
             data: updatedTrack,
         });
-    } catch (err) {
+    } catch (err:any) {
         if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
              res.status(404).json({ msg: "Track not found" });
         }
@@ -198,7 +198,7 @@ export const getAllProblemsTrack = async(req:Request , res:Response)=>{
                 tracks : allProblems_track
             })
         }
-    }catch(err){
+    }catch(err:any){
         console.log(err);
         res.status(500).json({
             msg: "Internal Server Error"
@@ -227,7 +227,7 @@ export const createLibrary = async(req:Request,res:Response)=>{
             msg:`Library created Successfully with id ${new_lib.id}`,
             lib: new_lib
         })
-    }catch(err){
+    }catch(err:any){
         console.log(err);
         res.status(500).json({
             msg:"Internal issues Occured"
@@ -285,7 +285,7 @@ export const getMyLibraries = async(req:Request,res:Response)=>{
             msg:"libraries fetched successfully",
             libraries : formattedLibs
         })
-    }catch(err){
+    }catch(err:any){
         console.log(err);
         res.status(500).json({
             msg:"Internal issues occured"
@@ -336,7 +336,7 @@ export const putTrackInLibrary = async(req:Request, res:Response)=>{
         res.status(201).json({
             msg:`problem track is successfully put in the library ${lib.name}`
         })
-    }catch(err){
+    }catch(err:any){
         console.log(err);
         res.status(500).json({
             msg:"Internal Error"
@@ -395,7 +395,7 @@ export const removeTrackFromLibrary = async(req:Request, res:Response)=>{
         res.status(200).json({
             msg:`the track with trackId ${trackId} is removed from the library with libraryId ${libraryId}`
         })
-   }catch(err){
+   }catch(err:any){
       console.log(err);
       res.status(500).json({msg:"Internal Issues occured"});
    }

@@ -17,7 +17,7 @@ export const getUserController =async (req: Request, res: Response) => {
             msg:"users fetched",
             users : users
         })
-    }catch(err){
+    }catch(err:any){
         console.log(err);
         res.status(401).json({
             msg: "coudnt find the users for u .. might be some issues there internally"
@@ -105,7 +105,7 @@ export const signIn_Controller = async (req: Request, res: Response) => {
     });
 
     res.status(200).json({ msg: `Welcome back, ${found_user.name}!` });
-  } catch (err) {
+  } catch (err:any) {
     console.error(err);
     res.status(500).json({ msg: "Internal server error." });
   }
@@ -176,7 +176,7 @@ export const signUp_Controller = async (req: Request, res: Response) => {
     });
 
     res.status(201).json({ msg: "User successfully signed up" });
-  } catch (err) {
+  } catch (err:any) {
     console.error(err);
     res.status(500).json({ msg: "Server error" });
   }
@@ -190,7 +190,7 @@ export const me_controller = async (req: Request, res: Response) => {
       }
       
        res.status(200).json({ email: req.body.email }); // Send a valid response only once
-  } catch (err) {
+  } catch (err:any) {
        res.status(500).json({ msg: "Server error" });
   }
 };
@@ -227,7 +227,7 @@ export const logout_Controller = (req: Request, res: Response) => {
         msg:"password updated",
         updatedUeser: updated_User
       })
-    }catch(err){
+    }catch(err:any){
         console.log(err);
         res.status(500).json({
           data:"some internal error happend"
