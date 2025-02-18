@@ -1,0 +1,76 @@
+// lets have atom for tracks and have them shown in the home page >> 
+// then think about having the database connected >>> 
+
+// lets understand the process 
+// put the real tracks in the home page >> 
+// have individual track being shown >> 
+// facility to update the existing track >> 
+
+
+
+
+
+?? useNavigate [with a click on the home page user gets directed to the indiTrack <> with all the infO]
+
+////////////////////////////////////////////////////////////////////  
+
+the tracks creation and updation is done >> 
+need to integrate the database>> 
+add more fieds and check/test the api after integrating the backend >>> 
+
+
+//bugs >> 
+1 ) in indietrack if i remove all the text of an existing field the field itself gets removed / deleted >> so the field will only be deleted when that
+delete button is clicked >> ++ [only when the track is not in the db] [already sorted] 
+
+2) after clicking the update button the previous text is shown again on those fields >> [they are added to the db btw]
+   >> intuition - > there are 2 alltracks and the alltracks for the ui is not getting updated i assume >
+                - > get both the ui's alltracks and the db alltracks console logged and note the difference >>    
+
+4) an error related to problem tag >> 
+
+
+// what should be the content on the card in home >> 
+// need to make sure the updatetrack works for the db as well >> 
+// jump on to analytics page >> [ what charts do the user needs >> and how can i make the user change the parameters of the carts >>]
+// [home page's analytics should be of prbolems solved and average time taken against months ]
+
+// how do i enable time tracking >> 
+
+probable charts >> 
+1 > time taken for writing  each part of the track [in respect to the tag ] [like user can swich to tags and see how much time its taking on steps]  
+2 > performance growth >> [can i introduce ai to measure the gap between the logic gap and the implementation gap [in respect to the months]] [not for now]
+
+3 > can i generate suggestions >> 
+4 >  
+
+
+
+
+*** think about the performance issues >> in fetching the problems and setting the arrays for the charts >> like any algorithms if i can 
+    perform >>
+*** refresh at the update page gets the user to the home page> [may be the least concerned]
+
+*** if the problem link is really long in respect to the area of the card >> [put dots after a certain point >]
+[react - toastify for the notifications]
+
+//////////////////////////////////////////////////////////////////////////////////// today << 
+write the backend for adding a track into a library 
+should i get drag drop features in that ..[time consuming may be]
+for now lets just keep it simple .. 
+there are a bunch of tracks listed .. i click on the plus button in the track and then on the library and there appears a confirm modal
+... i confirm and it goes in  
+lets not think of having the ideal app >> 
+just make sure to integrate the backend untill dupur >> 
+
+----------------------------------------  first ------------------------------------------------
+*** make sure only clicking on the card's div gets the user to the indieTracks page>> [not done] [skipping for now]
+*** top divs --> [total solved Count , total Time Spent , target - 6/30]; 
+*** showcase solution >> in the indietrack 
+
+----------------------------------------- basic user pov -----------------------------------------
+login/sign Up toast []
+avg Time is in seconds >> make it minutes >> 
+home page cards has implementation shown but when there is no implementation then its empty and it doesnt look good > 
+untill refresh a track creation makes -- an alert comes >> [a toast also ... so just remove the alert and its good ] 
+                                         a invalid date comes in the home page's graph > 

@@ -1,0 +1,21 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const problemController_1 = require("../controllers/problemController");
+const midware_OnProblem_1 = require("../niddlewares/midware_OnProblem");
+const problem_Router = (0, express_1.default)();
+problem_Router.get("/", problemController_1.getAllProblemsTrack);
+problem_Router.get("/getBydate", problemController_1.getProblemsByDate);
+problem_Router.get("/getRatings", problemController_1.getRatingsEachDate);
+problem_Router.get("/mytracks", midware_OnProblem_1.authOnProblemPost, problemController_1.getMyproblemTracks);
+problem_Router.post("/createPr", midware_OnProblem_1.authOnProblemPost, problemController_1.createProblemTrack);
+problem_Router.get("/mytracks/:id", midware_OnProblem_1.authOnProblemPost, problemController_1.getMyspecificTrack);
+problem_Router.patch("/mytracks/edit/:id", midware_OnProblem_1.authOnProblemPost, problemController_1.updateMySpecificTrack);
+problem_Router.post("/createLib", midware_OnProblem_1.authOnProblemPost, problemController_1.createLibrary);
+problem_Router.get("/getLibs", midware_OnProblem_1.authOnProblemPost, problemController_1.getMyLibraries);
+problem_Router.post("/addToLib", midware_OnProblem_1.authOnProblemPost, problemController_1.putTrackInLibrary);
+problem_Router.post("/removeFromLib", midware_OnProblem_1.authOnProblemPost, problemController_1.removeTrackFromLibrary);
+exports.default = problem_Router;

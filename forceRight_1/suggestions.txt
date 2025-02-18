@@ -1,0 +1,22 @@
+/// the suggestions for the database schemas >> 
+
+1 > enums for columns that would have defined set of values >> 
+
+
+  -- for better filterations and search "tags" can be added so that tage like greedy , dp can be selected and searched >> 
+2 > tags String[]
+
+  -- to make the user very clear about the performance .. there should be columns like "Solved_Count", "Problem Completion Status"
+
+  *> solvedCount Int @default(0)
+  *> problemStatus solStatus 
+
+  // post of a problem >>> get problems by id >> update/add {if that is the idea }
+  // delete etc >> 
+
+
+
+  >>>>  updating a track >> 
+   
+   patch is ideal for partial updates >> 
+   the main task is to get only the fields that are updated in the frontend and then push that to the api > >   

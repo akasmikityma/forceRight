@@ -1,0 +1,35 @@
+node_modules/      # Ignore node_modules at the root (if any)
+.DS_Store          # Ignore macOS system files
+.env              # Ignore environment variables files at the root
+.vscode           # Ignore VS Code settings (if you use VS Code)
+.idea             # Ignore IntelliJ IDEA settings (if you use IntelliJ)
+*.swp             # Ignore swap files
+.history          # Ignore shell history files
+npm-debug.log     # Ignore npm debug logs
+yarn-debug.log    # Ignore yarn debug logs
+pnpm-debug.log   # Ignore pnpm debug logs
+
+# Frontend specific ignores (forceRight/frontend)
+forceRight/frontend/node_modules/
+forceRight/frontend/.env
+forceRight/frontend/dist/       # Ignore the production build output
+forceRight/frontend/.cache/      # Ignore the Vite cache directory (if using Vite)
+forceRight/frontend/.parcel-cache/ # Ignore the Parcel cache directory if using parcel
+forceRight/frontend/dist/        # Ignore the build output if using a different builder
+
+# forceRight_1 specific ignores (forceRight/forceRight_1)
+forceRight/forceRight_1/node_modules/
+forceRight/forceRight_1/.env
+forceRight/forceRight_1/prisma/       # Ignore the Prisma client/generated files
+forceRight/forceRight_1/dist/        # Ignore the compiled output of your forceRight_1
+forceRight/forceRight_1/test-results/  # Ignore test results
+forceRight/forceRight_1/coverage/     # Ignore code coverage reports
+forceRight/forceRight_1/.cache/      # Ignore the cache directory (if any)
+
+# Prisma specific ignores (within forceRight/forceRight_1)
+forceRight/forceRight_1/prisma/.env  # Ignore .env files inside prisma folder
+forceRight/forceRight_1/prisma/client/ # Ignore Prisma Client files (generated)
+
+# Optional: If you use Docker
+# docker-compose.override.yml
+# .dockerignore
