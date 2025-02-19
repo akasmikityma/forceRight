@@ -99,12 +99,25 @@ export const signIn_Controller = async (req: Request, res: Response) => {
     );
 
     // Set HTTP-only cookie
+    // res.cookie("authToken", token, {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === "production", // Use HTTPS in production
+    //   sameSite: "strict",
+    //   maxAge: 4 * 60 * 60 * 1000, // 4 hours
+    // });
     res.cookie("authToken", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // Use HTTPS in production
-      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production", // Secure only in production
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Allow cross-origin in production
       maxAge: 4 * 60 * 60 * 1000, // 4 hours
     });
+    // res.cookie("authToken", token, {
+    //   httpOnly: true,
+    //   secure: true, // Must be true for SameSite=None to work in HTTPS
+    //   sameSite: "None", // Allow cross-origin cookie sharing
+    //   maxAge: 4 * 60 * 60 * 1000, // 4 hours
+    // });
+    
 
     res.status(200).json({ msg: `Welcome back, ${found_user.name}!` });
   } catch (err:any) {
@@ -186,7 +199,7 @@ export const signUp_Controller = async (req: Request, res: Response) => {
 
 export const me_controller = async (req: Request, res: Response) => {
   try {
-      if (!req.body.email) {
+      if (!req.body.email || !req.body.userId) {
            res.status(401).json({ msg: "You are not logged in" });
            return;
       }
