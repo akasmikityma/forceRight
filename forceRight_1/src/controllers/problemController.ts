@@ -271,9 +271,9 @@ export const getMyLibraries = async(req:Request,res:Response)=>{
         });
 
         // 🔥 Flatten the `problems` array inside each library
-        const formattedLibs = all_Libs.map(lib => ({
+        const formattedLibs = all_Libs.map((lib:any) => ({
             ...lib,
-            problems: lib.problems.map(p => p.problem) // Extract problem directly
+            problems: lib.problems.map((p:any) => p.problem) // Extract problem directly
         }));
         if(!all_Libs){
             res.status(404).json({
