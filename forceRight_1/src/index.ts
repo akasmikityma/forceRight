@@ -33,7 +33,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // Allow local frontend
+    origin: "forcerightapp-f6lrmlwlk-akasmiks-projects.vercel.app", // Allow local frontend
     credentials: true,
   })
 );
