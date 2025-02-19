@@ -139,7 +139,7 @@ const Library = () => {
 
   const fetchLibraries = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/prtracks/getLibs", { withCredentials: true });
+      const response = await axios.get("https://forceright-bnd.onrender.com/prtracks/getLibs", { withCredentials: true });
       const libs = response.data.libraries;
       console.log('libs',libs)
       setLibraries(libs);
@@ -234,7 +234,7 @@ const handleAddLibrary = async () => {
 
   try {
     const response = await axios.post(
-      "http://localhost:3000/prtracks/createLib",
+      "https://forceright-bnd.onrender.com/prtracks/createLib",
       { name: lib_name },
       { withCredentials: true }
     );
@@ -265,7 +265,7 @@ const handleAddLibrary = async () => {
         libraryId,
         trackId
       }
-      const response = await axios.post("http://localhost:3000/prtracks/addToLib",postData,{withCredentials:true});
+      const response = await axios.post("https://forceright-bnd.onrender.com/prtracks/addToLib",postData,{withCredentials:true});
       console.log(response.data.msg);
       toast(response.data.msg);
     }catch(err){
@@ -279,7 +279,7 @@ const handleAddLibrary = async () => {
         libraryId,
         trackId
       }
-      const response = await axios.post("http://localhost:3000/prtracks/removeFromLib",postData,{withCredentials:true});
+      const response = await axios.post("https://forceright-bnd.onrender.com/prtracks/removeFromLib",postData,{withCredentials:true});
       console.log(response.data.msg);
       toast(response.data.msg);
     }catch(err){

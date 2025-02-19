@@ -59,7 +59,7 @@ const Auth = () => {
     // alert(JSON.stringify(details))
     // const req = axios.post("http://localhost:3000/user/signIN")
     try{
-        const url = isLogin? "http://localhost:3000/user/signIN":"http://localhost:3000/user/signUP";
+        const url = isLogin? "https://forceright-bnd.onrender.com/user/signIN":"https://forceright-bnd.onrender.com/user/signUP";
         const payLoad = isLogin? {email:details.email,password:details.password}:details;
         const response =await axios.post(url,payLoad,{withCredentials:true});
         if(response.status===200 || response.status===201){

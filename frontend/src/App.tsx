@@ -11,6 +11,8 @@ import IndieTrack from './screens/IndieTrack'
 import Auth from './screens/Auth'
 import NoteTimer from './comps/NoteTimer'
 import LiBrary from './screens/LiBrary'
+import axios from 'axios'
+axios.defaults.withCredentials=true;
 const App = () => {
   return (
     <RecoilRoot>

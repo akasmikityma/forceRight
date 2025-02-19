@@ -81,8 +81,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     useEffect(() => {
       const checkAuth = async () => {
         try {
-          const res = await axios.get("http://localhost:3000/user/auth/me", { withCredentials: true }); // Include cookies
-          console.log(JSON.stringify(res.data));
+          const res = await axios.get("https://forceright-bnd.onrender.com/user/auth/me", { withCredentials: true }); // Include cookies
+          console.log(`checkAuth data`,JSON.stringify(res.data));
           if (res.status === 200) {
             setAuthenticatedst(true);
             nav("/"); // Redirect authenticated user

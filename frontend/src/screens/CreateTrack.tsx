@@ -252,7 +252,7 @@ const addLogicField = () => {
   const saveTodb=async()=>{
     const tracktoGo = {...currentTrack,timeTakenMinutes:time,rating:rating,difficulty:difficulty,tags:selectedTags,createdAt:Date.now()};
     console.log(`tracktoGO : `,tracktoGo)
-    const response = await axios.post("http://localhost:3000/prtracks/createPr",tracktoGo,{withCredentials:true});
+    const response = await axios.post("https://forceright-bnd.onrender.com/prtracks/createPr",tracktoGo,{withCredentials:true});
     toast(response.data.msg);
     // alert(response.data.msg);
     console.log(JSON.stringify(response.data));

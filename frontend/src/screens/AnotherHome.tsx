@@ -90,7 +90,7 @@ const AnotherHome = () => {
   
     const getTracksFrom_Db = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/prtracks/mytracks", { withCredentials: true });
+        const response = await axios.get("https://forceright-bnd.onrender.com/prtracks/mytracks", { withCredentials: true });
         const tracks_db = response.data.tracks;
         setdbTracks(tracks_db);
         console.log("Fetched from DB:", tracks_db);
