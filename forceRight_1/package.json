@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node dist/index.js",
     "dev": "nodemon --watch src --exec ts-node src/index.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "buildd": "npm install --include=dev && prisma generate && tsc"
   },
   "keywords": [],
   "author": "",
