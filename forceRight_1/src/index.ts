@@ -16,7 +16,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use('/user', userRouter);
 app.use('/prtracks',problem_Router);
-const PORT = 3000;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`server is running on http://localhost:${PORT}`);
 });
