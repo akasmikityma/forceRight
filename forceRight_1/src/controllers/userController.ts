@@ -185,11 +185,11 @@ export const signUp_Controller = async (req: Request, res: Response) => {
     // Set HTTP-only cookie
     res.cookie("authToken", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production", // Secure only in production
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Allow cross-origin in production
       maxAge: 4 * 60 * 60 * 1000,
     });
-
+    
     res.status(201).json({ msg: "User successfully signed up" });
   } catch (err:any) {
     console.error(err);
