@@ -338,7 +338,7 @@ const IndieTrack = () => {
   };
 
   const updateToDb = async()=>{
-    const response = await axios.patch(`https://forceright-bnd.onrender.com/prtracks/mytracks/edit/${Number(id)}`,currentTrack,{withCredentials:true});
+    const response = await axios.patch(`https://forceright-backend-1.onrender.com/prtracks/mytracks/edit/${Number(id)}`,currentTrack,{withCredentials:true});
     console.log(JSON.stringify(response.data));
     toast(response.data.msg);
   }
