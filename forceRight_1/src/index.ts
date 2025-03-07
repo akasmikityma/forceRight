@@ -33,7 +33,7 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://forcerightapp-f6lrmlwlk-akasmiks-projects.vercel.app",
+  "https://force-rightapp.vercel.app",
 ];
 
 app.use(
