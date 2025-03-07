@@ -105,12 +105,20 @@ export const signIn_Controller = async (req: Request, res: Response) => {
     //   sameSite: "strict",
     //   maxAge: 4 * 60 * 60 * 1000, // 4 hours
     // });
+    //---------------------------- real one
+    // res.cookie("authToken", token, {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === "production", // Secure only in production
+    //   sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Allow cross-origin in production
+    //   maxAge: 4 * 60 * 60 * 1000, // 4 hours
+    // });
     res.cookie("authToken", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // Secure only in production
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Allow cross-origin in production
+      secure: process.env.NODE_ENV === "production", // Ensure this is true only in production (HTTPS)
+      sameSite: "none", // Allow cross-origin cookies (important!)
       maxAge: 4 * 60 * 60 * 1000, // 4 hours
     });
+    console.log("Set-Cookie Header:", res.getHeaders()["set-cookie"]);
     // res.cookie("authToken", token, {
     //   httpOnly: true,
     //   secure: true, // Must be true for SameSite=None to work in HTTPS

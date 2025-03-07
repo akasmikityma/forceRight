@@ -34,6 +34,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   "https://force-rightapp.vercel.app",
+  "https://forceright-backend-1.onrender.com"
 ];
 
 app.use(
