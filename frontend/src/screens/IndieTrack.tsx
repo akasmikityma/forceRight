@@ -354,7 +354,7 @@ const IndieTrack = () => {
         try {
           await updateToDb(); // Await the database update
           setTimeout(()=>{
-            nav("/");
+            nav("/home");
           },2000)
       } catch (error) {
           console.error("Error updating track:", error);

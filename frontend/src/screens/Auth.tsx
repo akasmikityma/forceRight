@@ -52,7 +52,7 @@ const Auth = () => {
   }
 
   const getToHome=()=>{
-    nav("/");
+    nav("/home");
   }
 
   const save = async() => {

@@ -283,7 +283,7 @@ const addLogicField = () => {
     try{
       await saveTodb();
       setTimeout(() =>{
-        nav("/");
+        nav("/home");
       }, 2000); // Allow React to process state update first
     }catch(err){
       console.error("Error updating track:", err);

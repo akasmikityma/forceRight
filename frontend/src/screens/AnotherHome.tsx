@@ -1,26 +1,26 @@
-import  { useState, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // import PocketInfo from '../comps/PocketInfo';
 import { allCards } from '../CardsData';
 // import ProblemTagTimeChart from '../comps/Samplegraph';
 // import { ProblemTagTimeData } from '../comps/Samplegraph';
-import {SampleChart} from '../comps/SampleChart'
-import { allTracks,CombinedTracks } from '@/store/atoms';
-import { useRecoilValue ,useRecoilState} from 'recoil';
-import axios from "axios";
-import { Editor } from '@monaco-editor/react';
-import { TrackInterface } from '@/store/atoms';
 import DifficultyStats from '@/comps/DifficultyDist';
-import StreakComp from '@/comps/StreakComp';
 import MostStruggled from '@/comps/MostStruggled';
+import StreakComp from '@/comps/StreakComp';
+import { allTracks, authenticated, CombinedTracks, TrackInterface } from '@/store/atoms';
+import { Editor } from '@monaco-editor/react';
+import axios from "axios";
+import { memo } from 'react';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { SampleChart } from '../comps/SampleChart';
 
-const Card = ({ card, isActive,id }:{card:TrackInterface,isActive:any,id:number}) => {
+const Card = memo(({ card, isActive, id }: { card: TrackInterface; isActive: any; id: number }) => {
   const cardRef = useRef(null);
   const nav = useNavigate();
-  const trackOnClickHandler =()=>{
+
+  const trackOnClickHandler = () => {
     nav(`/track/${id}`);
-    
-  }
+  };
 
   useEffect(() => {
     if (cardRef.current) {
@@ -32,19 +32,19 @@ const Card = ({ card, isActive,id }:{card:TrackInterface,isActive:any,id:number}
 
   return (
     <div
-    ref={cardRef}
-    className={`absolute w-full md:w-2/3 sm:w-full max-w-2xl rounded-2xl shadow-2xl transition-all duration-500 ease-in-out backdrop-blur-lg bg-opacity-70 hover:scale-105 hover:shadow-[0px_0px_30px_rgba(255,204,0,0.6)] hover:translate-y-[-5px] hover:rotate-[1deg] ${
-      isActive ? 'opacity-100 scale-100' : 'opacity-0 scale-90'
-    }`}
-    style={{
-      transform: isActive ? 'translateX(0%)' : 'translateX(110%)',
-      zIndex: isActive ? allCards.length : 0,
-      background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%)',
-      border: '2px solid rgba(255, 255, 255, 0.2)',
-    }}
-    onClick={(e)=>e.stopPropagation()}
-  >
-    <div className="border-2 border-yellow-400 rounded-2xl p-6 h-[400px] flex flex-col justify-between relative bg-gradient-to-br from-lime-200 to-lime-50 shadow-lg hover:from-lime-300 hover:to-yellow-100 transition-all duration-500"
+      ref={cardRef}
+      className={`absolute w-full md:w-2/3 sm:w-full max-w-2xl rounded-2xl shadow-2xl transition-all duration-500 ease-in-out backdrop-blur-lg bg-opacity-70 hover:scale-105 hover:shadow-[0px_0px_30px_rgba(255,204,0,0.6)] hover:translate-y-[-5px] hover:rotate-[1deg] ${
+        isActive ? 'opacity-100 scale-100' : 'opacity-0 scale-90'
+      }`}
+      style={{
+        transform: isActive ? 'translateX(0%)' : 'translateX(110%)',
+        zIndex: isActive ? allCards.length : 0,
+        background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%)',
+        border: '2px solid rgba(255, 255, 255, 0.2)',
+      }}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="border-2 border-yellow-400 rounded-2xl p-6 h-[400px] flex flex-col justify-between relative bg-gradient-to-br from-lime-200 to-lime-50 shadow-lg hover:from-lime-300 hover:to-yellow-100 transition-all duration-500"
      onClick={trackOnClickHandler} >
       <div className="text-center">
         <h2 className="text-2xl font-bold text-orange-700 drop-shadow-lg tracking-wide">🚀 Recently Solved Problems</h2>
@@ -68,18 +68,17 @@ const Card = ({ card, isActive,id }:{card:TrackInterface,isActive:any,id:number}
         </div>
       </div>
     </div>
-  </div>
-  
-
+    </div>
   );
-};
+});
 
 const AnotherHome = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   
   const alltheTracks = useRecoilValue(allTracks);
   const [dbtracks,setdbTracks] = useState([]);
-  
+  const athed = useRecoilValue(authenticated);
+  const nav = useNavigate();
   // const [combinedTracks, setCombinedTracks] = useState<TrackInterface[]>([]);
   const [combinedTracks,setCombinedTracks] = useRecoilState(CombinedTracks);
   // const [totalSolved, setTotalSolved] = useState({
@@ -87,7 +86,11 @@ const AnotherHome = () => {
   //     count: 270,
   //   });
 
-  
+   useEffect(()=>{
+      if(!athed){
+        nav('/');
+      }
+   },[athed,nav])
     const getTracksFrom_Db = async () => {
       try {
         const response = await axios.get("https://forceright-backend-1.onrender.com/prtracks/mytracks", { withCredentials: true });
@@ -115,26 +118,34 @@ const AnotherHome = () => {
     console.log(alltheTracks);
   },[alltheTracks])
 
-  useEffect(() => {
+  const memoizedCombinedTracks = useMemo(() => {
     const trackMap = new Map();
     [...dbtracks, ...alltheTracks].forEach((track) => {
       trackMap.set(track.id, track);
     });
-  
-    setCombinedTracks(Array.from(trackMap.values())); // ✅ Updating state
-    console.log(`combined Tracks : `,combinedTracks)
+    return Array.from(trackMap.values());
   }, [dbtracks, alltheTracks]);
 
-  const goToPreviousCard = () => {
-    setCurrentCardIndex((prevIndex) => (prevIndex - 1 + combinedTracks.length) % combinedTracks.length);
-  };
+  useEffect(() => {
+    setCombinedTracks(memoizedCombinedTracks);
+    console.log(`combined Tracks : `, memoizedCombinedTracks);
+  }, [memoizedCombinedTracks]);
 
-  const goToNextCard = () => {
+  const goToPreviousCard = useCallback(() => {
+    setCurrentCardIndex((prevIndex) => (prevIndex - 1 + combinedTracks.length) % combinedTracks.length);
+  }, [combinedTracks]);
+
+  const goToNextCard = useCallback(() => {
     setCurrentCardIndex((prevIndex) => (prevIndex + 1) % combinedTracks.length);
-  };
+  }, [combinedTracks]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 overflow-y-auto">
+    <div className="min-h-screen flex flex-col bg-gray-50 overflow-y-auto"
+    style={{
+      scrollbarWidth: 'none', // For Firefox
+      msOverflowStyle: 'none', // For Internet Explorer and Edge
+    }}
+    >
       {/* ... other parts of the component */}
       <div className="h-32 bg-white shadow-lg shadow-black p-4 flex justify-around items-center "> {/* Increased height */}
         <DifficultyStats
