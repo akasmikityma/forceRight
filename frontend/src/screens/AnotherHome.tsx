@@ -86,6 +86,9 @@ const AnotherHome = () => {
   //     count: 270,
   //   });
 
+  const backEnd_url = "https://forceright-backend-1.onrender.com";
+  const dev_url = "http://localhost:8080";
+
    useEffect(()=>{
       if(!athed){
         nav('/');
@@ -93,7 +96,7 @@ const AnotherHome = () => {
    },[athed,nav])
     const getTracksFrom_Db = async () => {
       try {
-        const response = await axios.get("https://forceright-backend-1.onrender.com/prtracks/mytracks", { withCredentials: true });
+        const response = await axios.get(`${dev_url}/prtracks/mytracks`, { withCredentials: true });
         const tracks_db = response.data.tracks;
         setdbTracks(tracks_db);
         console.log("Fetched from DB:", tracks_db);

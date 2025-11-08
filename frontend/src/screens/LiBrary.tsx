@@ -71,12 +71,14 @@ import LIbraryComp from "@/comps/LIbraryComp";
 // import SlickTracks from "@/comps/SlickTracks";
 import axios from "axios";
 // import { v4 as uuidv4 } from 'uuid';
+import LibraryTree from "@/comps/LibraryTree";
 import Modal from 'react-modal';
 import { TrackInterface } from "@/store/atoms";
 import { useRecoilValue} from "recoil";
 import { useNavigate } from "react-router-dom";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import {toast, ToastContainer} from "react-toastify"
+import LastCompletedInfinite from "@/comps/LastCompletedInfinite";
 import {
   Tooltip,
   TooltipContent,
@@ -100,9 +102,10 @@ import {
 //   problemLink: string;
 // }
 
-interface Library {
+export interface Library {
   id: number;
   name: string;
+  children ?: Library[];
   problems: TrackInterface[];
 }
 
@@ -136,10 +139,11 @@ const Library = () => {
   const [selectedLibrary, setSelectedLibrary] = useState<number | null>(null);
   const [lib_name, setLib_name] = useState("");
   const nav = useNavigate();
-
+  const backEnd_url = "https://forceright-backend-1.onrender.com";
+  const dev_url = "http://localhost:8080";
   const fetchLibraries = async () => {
     try {
-      const response = await axios.get("https://forceright-backend-1.onrender.com/prtracks/getLibs", { withCredentials: true });
+      const response = await axios.get(`${dev_url}/prtracks/getLibs`, { withCredentials: true });
       const libs = response.data.libraries;
       console.log('libs',libs)
       setLibraries(libs);
@@ -226,36 +230,37 @@ const Library = () => {
 //     setLibraries(prev => prev.filter(lib => lib.id !== tempId));
 //   }
 // };
-const handleAddLibrary = async () => {
-  const tempId = -Date.now(); // Ensure it's a number
-  const newLibrary: Library = { id: tempId, name: lib_name, problems: [] };
 
-  setLibraries(prev => [...prev, newLibrary]); // No more type error
+// const handleAddLibrary = async () => {
+//   const tempId = -Date.now(); // Ensure it's a number
+//   const newLibrary: Library = { id: tempId, name: lib_name, problems: [] };
 
-  try {
-    const response = await axios.post(
-      "https://forceright-backend-1.onrender.com/prtracks/createLib",
-      { name: lib_name },
-      { withCredentials: true }
-    );
+//   setLibraries(prev => [...prev, newLibrary]); // No more type error
 
-    console.log("Backend response:", response.data); 
+//   try {
+//     const response = await axios.post(
+//       `${dev_url}/prtracks/createLib`,
+//       { name: lib_name },
+//       { withCredentials: true }
+//     );
 
-    if (!response.data.lib || typeof response.data.lib.id !== "number") {
-      console.error("Invalid backend response:", response.data);
-      return;
-    }
+//     console.log("Backend response:", response.data); 
 
-    setLibraries(prev =>
-      prev.map(lib => (lib.id === tempId ? { ...lib, id: response.data.lib.id } : lib))
-    );
-    setLib_name("");
-    closeModalOflib();
-  } catch (error) {
-    console.error("Error adding library:", error);
-    setLibraries(prev => prev.filter(lib => lib.id !== tempId)); // Remove temp entry
-  }
-};
+//     if (!response.data.lib || typeof response.data.lib.id !== "number") {
+//       console.error("Invalid backend response:", response.data);
+//       return;
+//     }
+
+//     setLibraries(prev =>
+//       prev.map(lib => (lib.id === tempId ? { ...lib, id: response.data.lib.id } : lib))
+//     );
+//     setLib_name("");
+//     closeModalOflib();
+//   } catch (error) {
+//     console.error("Error adding library:", error);
+//     setLibraries(prev => prev.filter(lib => lib.id !== tempId)); // Remove temp entry
+//   }
+// };
 
 
 
@@ -265,7 +270,7 @@ const handleAddLibrary = async () => {
         libraryId,
         trackId
       }
-      const response = await axios.post("https://forceright-backend-1.onrender.com/prtracks/addToLib",postData,{withCredentials:true});
+      const response = await axios.post(`${dev_url}/prtracks/addToLib`,postData,{withCredentials:true});
       console.log(response.data.msg);
       toast(response.data.msg);
     }catch(err){
@@ -279,7 +284,7 @@ const handleAddLibrary = async () => {
         libraryId,
         trackId
       }
-      const response = await axios.post("https://forceright-backend-1.onrender.com/prtracks/removeFromLib",postData,{withCredentials:true});
+      const response = await axios.post(`${dev_url}/prtracks/removeFromLib`,postData,{withCredentials:true});
       console.log(response.data.msg);
       toast(response.data.msg);
     }catch(err){
@@ -338,69 +343,232 @@ const handleAddLibrary = async () => {
     setSelectedLibrary(libraryID);
   };
 
+  const [selectedParentId, setSelectedParentId] = useState<number | null>(null);
+
+  const handleAddSubLibrary = (parentId: number) => {
+      setSelectedParentId(parentId);
+        openModalOflib();
+    };
+
+
+  const handleAddLibrary = async () => {
+    const tempId = -Date.now();
+    const newLibrary: Library = { 
+        id: tempId, 
+        name: lib_name, 
+        problems: [],
+        children: [] 
+    };
+
+    setLibraries(prev => {
+        if (selectedParentId) {
+            // Add to parent library
+            return prev.map(lib => {
+                if (lib.id === selectedParentId) {
+                    return {
+                        ...lib,
+                        children: [...(lib.children || []), newLibrary]
+                    };
+                }
+                return lib;
+            });
+        }
+        // Add as root library
+        return [...prev, newLibrary];
+    });
+
+    try {
+        const response = await axios.post(
+            `${dev_url}/prtracks/createLib`,
+            { 
+                name: lib_name,
+                parentId: selectedParentId 
+            },
+            { withCredentials: true }
+        );
+
+        if (!response.data.lib || typeof response.data.lib.id !== "number") {
+            throw new Error("Invalid backend response");
+        }
+
+        setLibraries(prev => updateLibraryId(prev, tempId, response.data.lib.id));
+        setLib_name("");
+        setSelectedParentId(null);
+        closeModalOflib();
+    } catch (error) {
+        console.error("Error adding library:", error);
+        setLibraries(prev => removeLibraryById(prev, tempId));
+        toast.error("Failed to create library");
+    }
+};
+
+
+  const updateLibraryId = (libraries: Library[], oldId: number, newId: number): Library[] => {
+    return libraries.map(lib => {
+        if (lib.id === oldId) {
+            return { ...lib, id: newId };
+        }
+        if (lib.children) {
+            return {
+                ...lib,
+                children: updateLibraryId(lib.children, oldId, newId)
+            };
+        }
+        return lib;
+    });
+};
+
+  const removeLibraryById = (libraries: Library[], id: number): Library[] => {
+    return libraries.filter(lib => {
+        if (lib.id === id) return false;
+        if (lib.children) {
+            lib.children = removeLibraryById(lib.children, id);
+        }
+        return true;
+    });
+};
+const handleMoveLibrary = async (draggedId: number, newParentId: number | null) => {
+  try {
+      // Optimistically update UI
+      setLibraries(prev => moveLibraryInTree(prev, draggedId, newParentId));
+
+      // Call backend
+      await axios.post(
+          `${dev_url}/prtracks/updateLibraryParent`,
+          { libraryId: draggedId, newParentId,},
+          { withCredentials: true }
+      );
+      fetchLibraries(); // Optionally re-fetch to sync
+  } catch (err) {
+      toast.error("Failed to move library");
+      fetchLibraries();
+  }
+};
+
+function moveLibraryInTree(libs: Library[], draggedId: number, newParentId: number | null): Library[] {
+  let dragged: Library | null = null;
+
+  // Remove dragged from tree
+  function remove(libList: Library[]): Library[] {
+      return libList.filter(lib => {
+          if (lib.id === draggedId) {
+              dragged = lib;
+              return false;
+          }
+          if (lib.children) {
+              lib.children = remove(lib.children);
+          }
+          return true;
+      });
+  }
+  let newLibs = remove([...libs]);
+
+  // Add to new parent or root
+  if (dragged) {
+      if (newParentId === null) {
+          newLibs.push(dragged);
+      } else {
+          function addToParent(libList: Library[]): boolean {
+              for (let lib of libList) {
+                  if (lib.id === newParentId) {
+                      lib.children = [...(lib.children || []), dragged!];
+                      return true;
+                  }
+                  if (lib.children && addToParent(lib.children)) return true;
+              }
+              return false;
+          }
+          addToParent(newLibs);
+      }
+  }
+  return newLibs;
+}
+
+const handleDeleteLibrary = async (libraryId: number) => {
+  try {
+      setLibraries(prev => removeLibraryById(prev, libraryId));
+      await axios.post(
+          `${dev_url}/prtracks/deleteLibrary`,
+          { libraryId,},
+          { withCredentials: true }
+      );
+      fetchLibraries();
+  } catch (err) {
+      toast.error("Failed to delete library");
+      fetchLibraries();
+  }
+};
+
   return (
     <div className="min-h-screen p-8 flex flex-col gap-10">
       {/* Library List */}
-      <div className="absolute top-16 right-10">
+      <div className="fixed top-16 right-10 z-50">
         <ToastContainer/>
       </div>
-      <div className="absolute top-16 right-10"
+      <div className="fixed top-16 right-10 z-50"
         onClick={()=>openModalOflib()}
       >
         <TooltipProvider>
-                    <Tooltip delayDuration={200}>
-                        <TooltipTrigger>
-                        <IoIosAddCircleOutline className="h-12 w-12"/>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                        <p>add Library</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
-      </div>
-      <div className="mt-6">
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-          {libraries.map((lib) => (
-            <LIbraryComp key={lib.id} name={lib.name} onClick={() => handleLibraryClick(lib.id)} />
-          ))}
-        </div>
+          <Tooltip delayDuration={200}>
+            <TooltipTrigger>
+              <IoIosAddCircleOutline className="h-12 w-12"/>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>add Library</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
-      {/* Dynamic Section */}
-      <div>
-        <div className="flex flex-col gap-4">
+      {/* Main Content Area */}
+      <div className="flex gap-8">
+        {/* Left Sidebar - Library Tree */}
+        <div className="w-1/4 min-w-[250px]">
+          <div className="bg-white shadow-lg rounded-lg">
+            <LibraryTree
+                libraries={libraries}
+                onSelectLibrary={handleLibraryClick}
+                onAddSubLibrary={handleAddSubLibrary}
+                onMoveLibrary={handleMoveLibrary}
+                onDeleteLibrary={handleDeleteLibrary}
+            />
+          </div>
+        </div>
+
+        {/* Right Content Area */}
+        <div className="flex-1">
           {selectedLibrary !== null ? (
             <LibraryDetails
               libraryid={selectedLibrary}
               onBack={() => setSelectedLibrary(null)}
               tracks={libraries.find(lib => lib.id === selectedLibrary)?.problems || []}
-              //@ts-ignore
               removeTrack={removeTrackFromLibrary}
             />
           ) : (
-            <>
-              <div className="flex flex-col gap-4">
-                <h1 className="text-3xl mb-6"> 🚀 last completed tracks -</h1>
+            <div className="bg-white shadow-lg rounded-lg p-6">
+              <h1 className="text-2xl font-semibold mb-6">🚀 Last Completed Tracks</h1>
+              {/* <div className="space-y-4">
                 {tracks?.map((track) => (
-                  <div key={track.id} className="border p-2 rounded mb-2 bg-white flex items-center justify-between cursor-pointer"
-                  onClick={()=>{
-                    nav(`/track/${track.id}`)
-                  }}
+                  <div 
+                    key={track.id} 
+                    className="border border-gray-200 p-4 rounded-lg hover:shadow-md transition-shadow flex items-center justify-between cursor-pointer bg-white"
+                    onClick={() => nav(`/track/${track.id}`)}
                   >
-                    <div>{track.problemLink}</div>
+                    <div className="font-medium text-gray-700">{track.problemLink}</div>
                     <button
-                      
                       onClick={(e) => {
                         e.stopPropagation();
-                        openModal(track)}}
-                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+                        openModal(track)
+                      }}
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors"
                     >
                       Add to Library
                     </button>
                   </div>
                 ))}
-              </div>
-            </>
+              </div> */}
+              <LastCompletedInfinite />
+            </div>
           )}
         </div>
       </div>
@@ -451,7 +619,7 @@ const handleAddLibrary = async () => {
   );
 };
 
-const LibraryDetails = ({ libraryid, onBack, tracks, removeTrack }: { libraryid: number; onBack: () => void; tracks: TrackInterface[]; removeTrack: (libraryID: number, trackId: string) => void; }) => {
+const LibraryDetails = ({ libraryid, onBack, tracks, removeTrack }: { libraryid: number; onBack: () => void; tracks: TrackInterface[]; removeTrack: (libraryID: number, trackId: number) => void; }) => {
   const nav = useNavigate();
   return (
     <div className="p-6 gray-100 rounded-lg">

@@ -20,9 +20,12 @@ const getColor = (count: number) => {
 const CalendarHeatmap: React.FC = () => {
   const [heatmapData, setHeatmapData] = useState<Record<string, number>>({});
 
+  const backEnd_url = "https://forceright-backend-1.onrender.com";
+  const dev_url = "http://localhost:8080";
+
   const getTracksByDate = async () => {
     try {
-      const response = await axios.get("https://forceright-backend-1.onrender.com/prtracks/getBydate", { withCredentials: true });
+      const response = await axios.get(`${dev_url}/prtracks/getBydate`, { withCredentials: true });
       const tracksState = response.data.tracks;
 
       // Transform API response into { "YYYY-MM-DD": count } format

@@ -170,6 +170,7 @@ import ImplementationEditor from "@/comps/ImplementationEditor";
 import axios from "axios";
 import { CombinedTracks } from "@/store/atoms";
 import {toast, ToastContainer} from 'react-toastify';
+import ConfirmDeleteModal from "@/comps/ConfirmDeleteModal";
 import { useNavigate } from "react-router-dom";
 
 const IndieTrack = () => {
@@ -181,7 +182,7 @@ const IndieTrack = () => {
   const [currentTrack, setCurrentTrack] = useState<TrackInterface | null>(null); // Local state for the current track
   const [loading, setLoading] = useState(true); // Track loading state
   const dbtracks = useRecoilValue(dbTracksState);
-  
+  const [showDeleteModal,setShowDeleteModal] = useState(false);
   // Fetch the track by ID and set it in state
   useEffect(() => {
     if (id) {
@@ -200,6 +201,35 @@ const IndieTrack = () => {
     }
   }, [id, allTracksState, setTrackInRecoil]);
 
+   
+  // delete the whole track >> 
+  const handleDelete = async () => {
+     if(!currentTrack) return;
+     setShowDeleteModal(true);
+  };
+  const confirmDelete = async()=>{
+    if(!currentTrack)return;
+    setShowDeleteModal(false);
+     const removedId = currentTrack.id;
+    setAllTracksState(prev => prev.filter(t => t.id !== removedId));
+
+    try {
+      await axios.post(
+        `${dev_url}/prtracks/deleteTrack`,
+        { id: removedId },
+        { withCredentials: true }
+      );
+      toast.success("Track deleted");
+      nav("/home");
+    } catch (err) {
+      console.error("delete error:", err);
+      toast.error("Failed to delete track. Refreshing data.");
+      window.location.reload();
+    }
+  }
+  const cancelDelete =()=>{
+    setShowDeleteModal(false);
+  }
   // Add a new logic field
   const addLogicField = () => {
     if (currentTrack) {
@@ -208,7 +238,7 @@ const IndieTrack = () => {
       setTrackInRecoil(updatedTrack);
     }
   };
-
+ 
   // Update a specific logic field
   const updateLogicField = (index: number, value: string) => {
     if (currentTrack) {
@@ -337,8 +367,11 @@ const IndieTrack = () => {
     }
   };
 
+  const backEnd_url = "https://forceright-backend-1.onrender.com";
+  const dev_url = "http://localhost:8080";
+
   const updateToDb = async()=>{
-    const response = await axios.patch(`https://forceright-backend-1.onrender.com/prtracks/mytracks/edit/${Number(id)}`,currentTrack,{withCredentials:true});
+    const response = await axios.patch(`${dev_url}/prtracks/mytracks/edit/${Number(id)}`,currentTrack,{withCredentials:true});
     console.log(JSON.stringify(response.data));
     toast(response.data.msg);
   }
@@ -373,6 +406,11 @@ const IndieTrack = () => {
 
   return (
     <div className="min-h-screen p-10">
+      <button className="absolute top-16 right-6 px-4 py-2 rounded bg-blue-500 text-white"
+      onClick={handleDelete}
+      >
+        Delete Track
+      </button>
       <div className='absolute top-4 right-10'>
         <ToastContainer />
         </div>
@@ -512,6 +550,17 @@ const IndieTrack = () => {
       >
         Update Track
       </button>
+
+      {/* Modal to confirm deletion of a track */}
+      <ConfirmDeleteModal
+        isOpen={showDeleteModal}
+        title="Delete track?"
+        message="This will permanently delete the track and cannot be undone. Are you sure?"
+        confirmLabel="Delete permanently"
+        cancelLabel="Keep track"
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
     </div>
   );
 };

@@ -2,6 +2,8 @@ import {  useEffect, useState } from 'react'
 import { useRecoilState } from 'recoil'
 import { authenticated } from '@/store/atoms'
 import { useNavigate } from 'react-router-dom'
+import {toast,ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
 import axios from 'axios'
 interface Credentials {
   name: string
@@ -41,6 +43,8 @@ const Auth = () => {
   // if (loading) return <p>Loading...</p>;
   // if (authenticated) return null;
 
+  const backEnd_url = "https://forceright-backend-1.onrender.com";
+  const dev_url = "http://localhost:8080";
 
   const [isLogin, setIsLogin] = useState(false) // Toggle state
   const [athed,setauthed] = useRecoilState(authenticated);
@@ -56,24 +60,28 @@ const Auth = () => {
   }
 
   const save = async() => {
-    // alert(JSON.stringify(details))
-    // const req = axios.post("http://localhost:3000/user/signIN")
-    try{
-        const url = isLogin? "https://forceright-backend-1.onrender.com/user/signIN":"https://forceright-backend-1.onrender.com/user/signUP";
-        const payLoad = isLogin? {email:details.email,password:details.password}:details;
-        const response =await axios.post(url,payLoad,{withCredentials:true});
-        alert(response.status);
-        if(response.status===200 || response.status===201){
-          alert(response.data.msg);
-          setauthed(true);
-          getToHome();
-        }else{
-          setauthed(false);
-          alert("try again .. there are some internal issues")
+    try {
+      const url = isLogin ? `${dev_url}/user/signIN` : `${dev_url}/user/signUP`;
+      const payLoad = isLogin ? 
+        { email: details.email, password: details.password } : 
+        details;
+      
+      const response = await axios.post(url, payLoad, { withCredentials: true });
+      
+      if (response.status === 200 || response.status === 201) {
+        // Only show success message if it contains "Welcome back"
+        if (response.data.msg.includes("Welcome back")) {
+          toast.success(response.data.msg);
         }
-        // alert(response.data.msg);
-    }catch(err){
-        alert("there are some internal issue happend");
+        setauthed(true);
+        getToHome();
+      } else {
+        setauthed(false);
+        toast.error("Something went wrong. Please try again.");
+      }
+    } catch (err: any) {
+      setauthed(false);
+      toast.error("Internal error occurred. Please try again later.");
     }
   }
 
@@ -85,6 +93,12 @@ const Auth = () => {
   },[])
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <ToastContainer 
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        closeOnClick
+      />
       <div className="flex flex-col gap-4 p-6 bg-white shadow-lg rounded-lg border border-gray-300 w-96">
         <h2 className="text-xl font-semibold text-center text-gray-800">
           {isLogin ? 'Login' : 'Sign Up'}

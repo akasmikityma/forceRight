@@ -326,85 +326,191 @@ export const streakCountData = selector({
   get: ({ get }) => {
     const allProbs = get(CombinedTracks);
 
-    if (!allProbs || allProbs.length === 0) {
+    const msPerDay = 24 * 60 * 60 * 1000;
+    const toYMD = (d: Date) => d.toISOString().split("T")[0];
+
+    // collect unique valid dates (YYYY-MM-DD)
+    const dateSet = new Set<string>();
+    for (const prob of allProbs) {
+      if (!prob?.createdAt) continue;
+      const dt = new Date(prob.createdAt);
+      if (isNaN(dt.getTime())) continue;
+      dateSet.add(toYMD(dt));
+    }
+
+    if (dateSet.size === 0) {
       return { currentStreak: 0, longestStreak: 0 };
     }
 
-    const sortedProbs = [...allProbs].sort((a, b) => {
-      const dateA = new Date(a.createdAt); // Parse createdAt string to Date
-      const dateB = new Date(b.createdAt); // Parse createdAt string to Date
-      return dateA.getTime() - dateB.getTime(); // Compare time values
-    });
+    const dates = Array.from(dateSet).sort(); // ascending YYYY-MM-DD
 
-    let currentStreak = 0;
+    // compute longest consecutive streak
     let longestStreak = 0;
-    let lastDate: Date | null = null; // Type lastDate correctly
-
-    for (const prob of sortedProbs) {
-      const currentDate = new Date(prob.createdAt); // Parse createdAt string to Date
-
-      if (lastDate === null) {
-        currentStreak = 1;
+    let currentRun = 1;
+    for (let i = 1; i < dates.length; i++) {
+      const prev = new Date(dates[i - 1]);
+      const cur = new Date(dates[i]);
+      const diffDays = Math.round((cur.getTime() - prev.getTime()) / msPerDay);
+      if (diffDays === 1) {
+        currentRun++;
       } else {
-        const diffInDays = Math.floor((currentDate.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24)); // Use getTime()
-        if (diffInDays === 1) {
-          currentStreak++;
-        } else if (diffInDays > 1) {
-          currentStreak = 1;
-        }
+        longestStreak = Math.max(longestStreak, currentRun);
+        currentRun = 1;
       }
+    }
+    longestStreak = Math.max(longestStreak, currentRun);
 
-      longestStreak = Math.max(longestStreak, currentStreak);
-      lastDate = currentDate;
+    // compute current streak ending at the latest recorded date
+    let currentStreak = 0;
+    let checkDate = new Date(dates[dates.length - 1]); // latest date
+    while (dateSet.has(toYMD(checkDate))) {
+      currentStreak++;
+      checkDate = new Date(checkDate.getTime() - msPerDay);
     }
 
     return { currentStreak, longestStreak };
   },
-});// Import your atom
+});
 
-export const mostStruggledTagData = selector({
+// export const streakCountData = selector({
+//   key: "streakCountData",
+//   get: ({ get }) => {
+//     const allProbs = get(CombinedTracks);
+
+//     if (!allProbs || allProbs.length === 0) {
+//       return { currentStreak: 0, longestStreak: 0 };
+//     }
+
+//     const sortedProbs = [...allProbs].sort((a, b) => {
+//       const dateA = new Date(a.createdAt); // Parse createdAt string to Date
+//       const dateB = new Date(b.createdAt); // Parse createdAt string to Date
+//       return dateA.getTime() - dateB.getTime(); // Compare time values
+//     });
+
+//     let currentStreak = 0;
+//     let longestStreak = 0;
+//     let lastDate: Date | null = null; // Type lastDate correctly
+
+//     for (const prob of sortedProbs) {
+//       const currentDate = new Date(prob.createdAt); // Parse createdAt string to Date
+
+//       if (lastDate === null) {
+//         currentStreak = 1;
+//       } else {
+//         const diffInDays = Math.floor((currentDate.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24)); // Use getTime()
+//         if (diffInDays === 1) {
+//           currentStreak++;
+//         } else if (diffInDays > 1) {
+//           currentStreak = 1;
+//         }
+//       }
+
+//       longestStreak = Math.max(longestStreak, currentStreak);
+//       lastDate = currentDate;
+//     }
+
+//     return { currentStreak, longestStreak };
+//   },
+// });// Import your atom
+
+// export const mostStruggledTagData = selector({
+//   key: "mostStruggledTagData",
+//   get: ({ get }) => {
+//     const allProbs = get(CombinedTracks);
+
+//     if (!allProbs || allProbs.length === 0) {
+//       return null; // Return null for no data
+//     }
+
+//     const tagHardCounts = new Map<string, number>();
+//     const tagTotalTime = new Map<string, number>();
+
+//     for (const prob of allProbs) {
+//       if (prob.difficulty === 'HARD') {
+//         if (prob.tags && Array.isArray(prob.tags)) {
+//           for (const tag of prob.tags) {
+//             tagHardCounts.set(tag, (tagHardCounts.get(tag) || 0) + 1);
+//             tagTotalTime.set(tag, (tagTotalTime.get(tag) || 0) + (prob.timeTakenMinutes || 0));
+//           }
+//         }
+//       }
+//     }
+
+//     if (tagHardCounts.size === 0) {
+//       return null; // No "HARD" problems found
+//     }
+
+//     let bestTag = null;
+//     let maxScore = -1; // Initialize with a value that will always be smaller
+
+//     for (const [tag, hardCount] of tagHardCounts.entries()) {
+//       const totalTime = tagTotalTime.get(tag) || 0;
+//       const averageTime = hardCount > 0 ? totalTime / hardCount : 0;
+
+//       // Calculate a combined score (you can adjust the weights)
+//       const score = hardCount + averageTime; // Equal weight for count and time
+
+//       if (score > maxScore) {
+//         maxScore = score;
+//         bestTag = tag;
+//       }
+//     }
+
+//     return bestTag; // Return the single best tag or null if no data
+//   },
+// });
+export const mostStruggledTagData = selector<string>({
   key: "mostStruggledTagData",
   get: ({ get }) => {
     const allProbs = get(CombinedTracks);
 
+    // If no tracks, return a sensible fallback string for the dashboard
     if (!allProbs || allProbs.length === 0) {
-      return null; // Return null for no data
+      return "general";
     }
 
-    const tagHardCounts = new Map<string, number>();
-    const tagTotalTime = new Map<string, number>();
+    const scoreForTags = (probs: typeof allProbs) => {
+      const tagHardCounts = new Map<string, number>();
+      const tagTotalTime = new Map<string, number>();
 
-    for (const prob of allProbs) {
-      if (prob.difficulty === 'HARD') {
-        if (prob.tags && Array.isArray(prob.tags)) {
-          for (const tag of prob.tags) {
-            tagHardCounts.set(tag, (tagHardCounts.get(tag) || 0) + 1);
-            tagTotalTime.set(tag, (tagTotalTime.get(tag) || 0) + (prob.timeTakenMinutes || 0));
-          }
+      for (const prob of probs) {
+        if (!prob.tags || !Array.isArray(prob.tags)) continue;
+        for (const tag of prob.tags) {
+          tagHardCounts.set(tag, (tagHardCounts.get(tag) || 0) + 1);
+          tagTotalTime.set(tag, (tagTotalTime.get(tag) || 0) + (prob.timeTakenMinutes || 0));
         }
       }
-    }
 
-    if (tagHardCounts.size === 0) {
-      return null; // No "HARD" problems found
-    }
+      if (tagHardCounts.size === 0) return null;
 
-    let bestTag = null;
-    let maxScore = -1; // Initialize with a value that will always be smaller
-
-    for (const [tag, hardCount] of tagHardCounts.entries()) {
-      const totalTime = tagTotalTime.get(tag) || 0;
-      const averageTime = hardCount > 0 ? totalTime / hardCount : 0;
-
-      // Calculate a combined score (you can adjust the weights)
-      const score = hardCount + averageTime; // Equal weight for count and time
-
-      if (score > maxScore) {
-        maxScore = score;
-        bestTag = tag;
+      let bestTag: string | null = null;
+      let maxScore = -Infinity;
+      for (const [tag, count] of tagHardCounts.entries()) {
+        const totalTime = tagTotalTime.get(tag) || 0;
+        const avgTime = count > 0 ? totalTime / count : 0;
+        // Combined score: weight count higher but consider avg time as tiebreaker
+        const score = count * 1.2 + avgTime * 0.01;
+        if (score > maxScore) {
+          maxScore = score;
+          bestTag = tag;
+        }
       }
+      return bestTag;
+    };
+
+    // Prefer HARD, then MEDIUM, then EASY
+    const difficulties = ["HARD", "MEDIUM", "EASY"];
+    for (const diff of difficulties) {
+      const filtered = allProbs.filter((p) => p.difficulty === diff);
+      const candidate = scoreForTags(filtered);
+      if (candidate) return candidate;
     }
 
-    return bestTag; // Return the single best tag or null if no data
+    // If no tags found by difficulty, fall back to overall tags
+    const overallCandidate = scoreForTags(allProbs);
+    if (overallCandidate) return overallCandidate;
+
+    // Final fallback when absolutely no tag data exists
+    return "general";
   },
 });

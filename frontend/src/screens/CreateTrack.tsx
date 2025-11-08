@@ -249,10 +249,14 @@ const addLogicField = () => {
   // const notify=(data:string)=>{
   //   toast(data);
   // }
+
+  const backEnd_url = "https://forceright-backend-1.onrender.com";
+  const dev_url = "http://localhost:8080";
+
   const saveTodb=async()=>{
     const tracktoGo = {...currentTrack,timeTakenMinutes:time,rating:rating,difficulty:difficulty,tags:selectedTags,createdAt:Date.now()};
     console.log(`tracktoGO : `,tracktoGo)
-    const response = await axios.post("https://forceright-backend-1.onrender.com/prtracks/createPr",tracktoGo,{withCredentials:true});
+    const response = await axios.post(`${dev_url}/prtracks/createPr`,tracktoGo,{withCredentials:true});
     toast(response.data.msg);
     // alert(response.data.msg);
     console.log(JSON.stringify(response.data));
