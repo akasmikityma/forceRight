@@ -11,6 +11,3 @@ const SlickTracks = () => {
 };
 
 export default SlickTracks;;
-
-
-//transition-all duration-300 ease-in-out hover:bg-pink-300 hover:shadow-lg hover:scale-105

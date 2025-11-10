@@ -1,83 +1,15 @@
 
-// import React, { useState } from "react";
-// import LIbraryComp from "@/comps/LIbraryComp";
-// import SlickTracks from "@/comps/SlickTracks";
-
-// const Library = () => {
-//   const [selectedLibrary, setSelectedLibrary] = useState<string | null>(null);
-
-//   const handleLibraryClick = (name: string) => {
-//     setSelectedLibrary(name);
-//   };
-
-//   return (
-//     <div className="min-h-screen p-8 flex flex-col gap-10">
-//       {/* Library List */}
-//       <div>
-//         <div className="grid grid-cols-6 gap-6">
-//           {["cfContest 103", "neetCode 150", "CSES 150"].map((name) => (
-//             <LIbraryComp key={name} name={name} onClick={() => handleLibraryClick(name)} />
-//           ))}
-//         </div>
-//       </div>
-
-//       {/* Dynamic Section */}
-//       <div>
-//         <div className="flex flex-col gap-4">
-//           {selectedLibrary ? (
-//             <LibraryDetails name={selectedLibrary} onBack={() => setSelectedLibrary(null)} />
-//           ) : (
-//             <>
-//               <div className="flex flex-col gap-4">
-//                 <h1 className="text-3xl mb-6"> 🚀 last completed tracks -</h1>
-//               <SlickTracks />
-//               <SlickTracks />
-//               <SlickTracks />
-//               <SlickTracks />
-//               <SlickTracks />
-//               </div>
-//             </>
-//           )}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// // ✅ Add LibraryDetails inside the same file
-// const LibraryDetails = ({ name, onBack }: { name: string; onBack: () => void }) => {
-//   return (
-//     <div className="p-6 gray-100 rounded-lg">
-//       <button onClick={onBack} className="mb-4 text-blue-500 underline">
-//         Back
-//       </button>
-//       <h2 className="text-xl font-bold">{name} Content</h2>
-//       <div className="flex flex-col gap-3 mt-4">
-//         <SlickTracks />
-//         <SlickTracks />
-//         <SlickTracks />
-//         <SlickTracks />
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Library;
-
-// ---------------------------------- with buttons 
 
 import  { useEffect, useState } from "react";
-import LIbraryComp from "@/comps/LIbraryComp";
-// import SlickTracks from "@/comps/SlickTracks";
 import axios from "axios";
 // import { v4 as uuidv4 } from 'uuid';
-import LibraryTree from "@/comps/LibraryTree";
 import Modal from 'react-modal';
 import { TrackInterface } from "@/store/atoms";
 import { useRecoilValue} from "recoil";
 import { useNavigate } from "react-router-dom";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import {toast, ToastContainer} from "react-toastify"
+import LibraryTree from "@/comps/LibraryTree";
 import LastCompletedInfinite from "@/comps/LastCompletedInfinite";
 import {
   Tooltip,
@@ -85,22 +17,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-
-// interface Track {
-//   id: string;
-//   content: string;
-// }
-
-// import React, { useState, useEffect } from "react";
-// import LIbraryComp from "@/comps/LIbraryComp";
-// import axios from "axios";
-// import Modal from 'react-modal';
-
-// interface TrackInterface {
-//   id: string;
-//   content: string;
-//   problemLink: string;
-// }
 
 export interface Library {
   id: number;
@@ -138,12 +54,15 @@ const Library = () => {
   const [selectedTrack, setSelectedTrack] = useState<TrackInterface | null>(null);
   const [selectedLibrary, setSelectedLibrary] = useState<number | null>(null);
   const [lib_name, setLib_name] = useState("");
-  const nav = useNavigate();
+  // const nav = useNavigate();
+  
   const backEnd_url = "https://forceright-backend-1.onrender.com";
-  const dev_url = "http://localhost:8080";
+  // const dev_url = "http://localhost:8080";
+  
   const fetchLibraries = async () => {
     try {
-      const response = await axios.get(`${dev_url}/prtracks/getLibs`, { withCredentials: true });
+      if(tracks) console.log("there are tracks on library page")
+      const response = await axios.get(`${backEnd_url}/prtracks/getLibs`, { withCredentials: true });
       const libs = response.data.libraries;
       console.log('libs',libs)
       setLibraries(libs);
@@ -156,10 +75,10 @@ const Library = () => {
     fetchLibraries();
   }, []);
 
-  const openModal = (track: TrackInterface) => {
-    setSelectedTrack(track);
-    setIsModalOpen(true);
-  };
+  // const openModal = (track: TrackInterface) => {
+  //   setSelectedTrack(track);
+  //   setIsModalOpen(true);
+  // };
 
   const openModalOflib =()=>{
     setIsLibModalOpen(true);
@@ -173,104 +92,13 @@ const Library = () => {
     setSelectedTrack(null);
     setIsModalOpen(false);
   };
-
-  // const createLib_inDB = async()=>{
-  //   try{
-  //     const response = await axios.post("http://localhost:3000/prtracks/addToLib/createLib",{name:lib_name},{withCredentials:true});
-  //     toast(response.data.msg);
-  //   }catch(err){
-  //     console.log(err);
-  //   }
-  // }
-
-  // const add_a_lib =async()=>{
-  //   setLibraries((prev)=>)
-  //   try {
-  //     await createLib_inDB();
-  //   } catch (error) {
-      
-  //   }
-  // }
-
-//   const add_a_lib = async () => {
-//   // Generate a temporary ID (negative to avoid conflicts)
-//   const tempId = -Date.now();
-
-//   // Optimistically update state
-//   setLibraries(prev => [
-//     ...(prev || []), // Ensure prev is always an array
-//     { id: tempId, name: lib_name, problems: [] }
-//   ]);
-
-//   try {
-//     const response = await axios.post(
-//       "http://localhost:3000/prtracks/createLib",
-//       { name: lib_name },
-//       { withCredentials: true }
-//     );
-
-//     if (!response.data.lib || !response.data.lib.id) {
-//       console.error("Invalid backend response:", response.data);
-//       return;
-//     }else{
-//       console.log(`response from db`,response.data.msg);
-//     }
-
-//     // Replace temporary ID with actual ID from backend
-//     setLibraries(prev =>
-//       prev.map(lib =>
-//         lib.id === tempId ? { ...lib, id: response.data.library.id } : lib
-//       )
-//     );
-//     closeModalOflib();
-//   } catch (error) {
-//     console.error("Error adding library:", error);
-    
-//     // Remove temp entry if the API request fails
-//     setLibraries(prev => prev.filter(lib => lib.id !== tempId));
-//   }
-// };
-
-// const handleAddLibrary = async () => {
-//   const tempId = -Date.now(); // Ensure it's a number
-//   const newLibrary: Library = { id: tempId, name: lib_name, problems: [] };
-
-//   setLibraries(prev => [...prev, newLibrary]); // No more type error
-
-//   try {
-//     const response = await axios.post(
-//       `${dev_url}/prtracks/createLib`,
-//       { name: lib_name },
-//       { withCredentials: true }
-//     );
-
-//     console.log("Backend response:", response.data); 
-
-//     if (!response.data.lib || typeof response.data.lib.id !== "number") {
-//       console.error("Invalid backend response:", response.data);
-//       return;
-//     }
-
-//     setLibraries(prev =>
-//       prev.map(lib => (lib.id === tempId ? { ...lib, id: response.data.lib.id } : lib))
-//     );
-//     setLib_name("");
-//     closeModalOflib();
-//   } catch (error) {
-//     console.error("Error adding library:", error);
-//     setLibraries(prev => prev.filter(lib => lib.id !== tempId)); // Remove temp entry
-//   }
-// };
-
-
-
   const addtrack_toLIb_inDB = async(libraryId:number,trackId:number)=>{
     try{
       const postData = {
         libraryId,
         trackId
       }
-      const response = await axios.post(`${dev_url}/prtracks/addToLib`,postData,{withCredentials:true});
+      const response = await axios.post(`${backEnd_url}/prtracks/addToLib`,postData,{withCredentials:true});
       console.log(response.data.msg);
       toast(response.data.msg);
     }catch(err){
@@ -284,7 +112,7 @@ const Library = () => {
         libraryId,
         trackId
       }
-      const response = await axios.post(`${dev_url}/prtracks/removeFromLib`,postData,{withCredentials:true});
+      const response = await axios.post(`${backEnd_url}/prtracks/removeFromLib`,postData,{withCredentials:true});
       console.log(response.data.msg);
       toast(response.data.msg);
     }catch(err){
@@ -379,7 +207,7 @@ const Library = () => {
 
     try {
         const response = await axios.post(
-            `${dev_url}/prtracks/createLib`,
+            `${backEnd_url}/prtracks/createLib`,
             { 
                 name: lib_name,
                 parentId: selectedParentId 
@@ -434,7 +262,7 @@ const handleMoveLibrary = async (draggedId: number, newParentId: number | null) 
 
       // Call backend
       await axios.post(
-          `${dev_url}/prtracks/updateLibraryParent`,
+          `${backEnd_url}/prtracks/updateLibraryParent`,
           { libraryId: draggedId, newParentId,},
           { withCredentials: true }
       );
@@ -488,7 +316,7 @@ const handleDeleteLibrary = async (libraryId: number) => {
   try {
       setLibraries(prev => removeLibraryById(prev, libraryId));
       await axios.post(
-          `${dev_url}/prtracks/deleteLibrary`,
+          `${backEnd_url}/prtracks/deleteLibrary`,
           { libraryId,},
           { withCredentials: true }
       );
@@ -649,148 +477,3 @@ const LibraryDetails = ({ libraryid, onBack, tracks, removeTrack }: { libraryid:
 };
 
 export default Library;
-// ------------------------ the gemini [doesnt work]
-
-// import React, { useState } from "react";
-// import LIbraryComp from "@/comps/LIbraryComp";
-// import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-// import { v4 as uuidv4 } from 'uuid';
-
-// interface Track {
-//   id: string;
-//   content: string;
-// }
-
-// interface Library {
-//   [libraryName: string]: Track[];
-// }
-
-// const Library = () => {
-//   const [selectedLibrary, setSelectedLibrary] = useState<string | null>(null);
-//   const [libraries, setLibraries] = useState<Library>({
-//     "cfContest 103": [],
-//     "neetCode 150": [],
-//     "CSES 150": [],
-//   });
-//   const [tracks, setTracks] = useState<Track[]>([
-//     { id: uuidv4(), content: "Track 1" },
-//     { id: uuidv4(), content: "Track 2" },
-//     { id: uuidv4(), content: "Track 3" },
-//     { id: uuidv4(), content: "Track 4" },
-//     { id: uuidv4(), content: "Track 5" },
-//   ]);
-
-//   const handleLibraryClick = (name: string) => {
-//     setSelectedLibrary(name);
-//   };
-
-//   const onDragEnd = (result: any) => {
-//     if (!result.destination) {
-//       return;
-//     }
-
-//     const { source, destination } = result;
-
-//     if (source.droppableId === destination.droppableId) {
-//       return; // No reordering within the same library for now
-//     }
-
-//     const trackId = result.draggableId; // This is the correct ID now
-//     const libraryName = destination.droppableId;
-
-//     const updatedLibraries = { ...libraries };
-//     const draggedTrack = tracks.find(track => track.id === trackId);
-
-//     if (draggedTrack && !updatedLibraries[libraryName].find(track => track.id === draggedTrack.id)) {
-//       updatedLibraries[libraryName] = [...updatedLibraries[libraryName], draggedTrack];
-//       setLibraries(updatedLibraries);
-//     }
-//   };
-
-
-//   const removeTrackFromLibrary = (libraryName: string, trackId: string) => {
-//     const updatedLibraries = { ...libraries };
-//     updatedLibraries[libraryName] = updatedLibraries[libraryName].filter(track => track.id !== trackId);
-//     setLibraries(updatedLibraries);
-//   };
-
-//   return (
-//     <div className="min-h-screen p-8 flex flex-col gap-10">
-//       {/* Library List */}
-//       <div>
-//         <div className="grid grid-cols-6 gap-6">
-//           {Object.keys(libraries).map((name) => (
-//             <LIbraryComp key={name} name={name} onClick={() => handleLibraryClick(name)} />
-//           ))}
-//         </div>
-//       </div>
-
-//       {/* Dynamic Section */}
-//       <div>
-//         <div className="flex flex-col gap-4">
-//           {selectedLibrary ? (
-//             <LibraryDetails
-//               name={selectedLibrary}
-//               onBack={() => setSelectedLibrary(null)}
-//               tracks={libraries[selectedLibrary]}
-//               removeTrack={removeTrackFromLibrary}
-//             />
-//           ) : (
-//             <>
-//               <div className="flex flex-col gap-4">
-//                 <h1 className="text-3xl mb-6"> 🚀 last completed tracks -</h1>
-//                 <DragDropContext onDragEnd={onDragEnd}>
-//                   <Droppable droppableId="tracks">
-//                     {(provided) => (
-//                       <div {...provided.droppableProps} ref={provided.innerRef}>
-//                         {tracks.map((track, index) => (
-//                           <Draggable key={track.id} draggableId={track.id} index={index}>
-//                             {(provided) => { // Correct structure here!
-//                               return ( // Explicitly return a single React element
-//                                 <div
-//                                   {...provided.draggableProps}
-//                                   {...provided.dragHandleProps}
-//                                   ref={provided.innerRef}
-//                                   className="border p-2 rounded mb-2 bg-white flex items-center cursor-move"
-//                                 >
-//                                   <div>{track.content}</div>
-//                                 </div>
-//                               );
-//                             }}
-//                           </Draggable>
-//                         ))}
-//                         {provided.placeholder}
-//                       </div>
-//                     )}
-//                   </Droppable>
-//                 </DragDropContext>
-//               </div>
-//             </>
-//           )}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// const LibraryDetails = ({ name, onBack, tracks, removeTrack }: { name: string; onBack: () => void; tracks: Track[]; removeTrack: (libraryName: string, trackId: string) => void; }) => {
-//   return (
-//     <div className="p-6 gray-100 rounded-lg">
-//       <button onClick={onBack} className="mb-4 text-blue-500 underline">
-//         Back
-//       </button>
-//       <h2 className="text-xl font-bold">{name} Content</h2>
-//       <div className="flex flex-col gap-3 mt-4">
-//         {tracks.map((track) => (
-//           <div key={track.id} className="border p-2 rounded mb-2 bg-white flex justify-between items-center">
-//             {track.content}
-//             <button onClick={() => removeTrack(name, track.id)} className="text-red-500">Remove</button>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Library;
-

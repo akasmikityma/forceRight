@@ -64,7 +64,10 @@ export const authenticated = atom<boolean>({
   key:"userAuthState",
   default:false
 })
-
+export const userIdState = atom<number | null>({
+  key: "userIdState",
+  default: null,
+});
 export const allTracks = atom<TrackInterface[]>({
   key: "all_tracks",
   default: [], // Initialize as an empty array for multiple tracks
@@ -328,7 +331,7 @@ export const streakCountData = selector({
 
     const msPerDay = 24 * 60 * 60 * 1000;
     const toYMD = (d: Date) => d.toISOString().split("T")[0];
-
+    
     // collect unique valid dates (YYYY-MM-DD)
     const dateSet = new Set<string>();
     for (const prob of allProbs) {
@@ -339,38 +342,81 @@ export const streakCountData = selector({
     }
 
     if (dateSet.size === 0) {
-      return { currentStreak: 0, longestStreak: 0 };
+      return { currentStreak: 0 };
     }
 
-    const dates = Array.from(dateSet).sort(); // ascending YYYY-MM-DD
-
-    // compute longest consecutive streak
-    let longestStreak = 0;
-    let currentRun = 1;
-    for (let i = 1; i < dates.length; i++) {
-      const prev = new Date(dates[i - 1]);
-      const cur = new Date(dates[i]);
-      const diffDays = Math.round((cur.getTime() - prev.getTime()) / msPerDay);
-      if (diffDays === 1) {
-        currentRun++;
-      } else {
-        longestStreak = Math.max(longestStreak, currentRun);
-        currentRun = 1;
-      }
-    }
-    longestStreak = Math.max(longestStreak, currentRun);
+    // const dates = Array.from(dateSet).sort(); // ascending YYYY-MM-DD
 
     // compute current streak ending at the latest recorded date
     let currentStreak = 0;
-    let checkDate = new Date(dates[dates.length - 1]); // latest date
+    let checkDate = new Date(); // Start from today
+    
+    // Go backwards until we find a day without activity
     while (dateSet.has(toYMD(checkDate))) {
       currentStreak++;
       checkDate = new Date(checkDate.getTime() - msPerDay);
     }
 
-    return { currentStreak, longestStreak };
+    return { currentStreak };
   },
 });
+
+// just for longest Streak >> 
+export const longestStreakState = atom<number>({
+  key: "longestStreakState",
+  default: 0
+});
+
+// export const streakCountData = selector({
+//   key: "streakCountData",
+//   get: ({ get }) => {
+//     const allProbs = get(CombinedTracks);
+
+//     const msPerDay = 24 * 60 * 60 * 1000;
+//     const toYMD = (d: Date) => d.toISOString().split("T")[0];
+
+//     // collect unique valid dates (YYYY-MM-DD)
+//     const dateSet = new Set<string>();
+//     for (const prob of allProbs) {
+//       if (!prob?.createdAt) continue;
+//       const dt = new Date(prob.createdAt);
+//       if (isNaN(dt.getTime())) continue;
+//       dateSet.add(toYMD(dt));
+//     }
+
+//     if (dateSet.size === 0) {
+//       return { currentStreak: 0, longestStreak: 0 };
+//     }
+
+//     const dates = Array.from(dateSet).sort(); // ascending YYYY-MM-DD
+
+//     // compute longest consecutive streak
+//     let longestStreak = 0;
+//     let currentRun = 1;
+//     for (let i = 1; i < dates.length; i++) {
+//       const prev = new Date(dates[i - 1]);
+//       const cur = new Date(dates[i]);
+//       const diffDays = Math.round((cur.getTime() - prev.getTime()) / msPerDay);
+//       if (diffDays === 1) {
+//         currentRun++;
+//       } else {
+//         longestStreak = Math.max(longestStreak, currentRun);
+//         currentRun = 1;
+//       }
+//     }
+//     longestStreak = Math.max(longestStreak, currentRun);
+
+//     // compute current streak ending at the latest recorded date
+//     let currentStreak = 0;
+//     let checkDate = new Date(dates[dates.length - 1]); // latest date
+//     while (dateSet.has(toYMD(checkDate))) {
+//       currentStreak++;
+//       checkDate = new Date(checkDate.getTime() - msPerDay);
+//     }
+
+//     return { currentStreak, longestStreak };
+//   },
+// });
 
 // export const streakCountData = selector({
 //   key: "streakCountData",

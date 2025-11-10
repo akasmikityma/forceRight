@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { useRecoilState } from "recoil";
 import { CombinedTracks, TrackInterface } from "@/store/atoms";
 
-const dev_url = "http://localhost:8080";
-
+// const dev_url = "http://localhost:8080";
+const backEnd_url = "https://forceright-backend-1.onrender.com";
 export function useInfiniteTracks(initialPageSize = 10) {
   const [combinedTracks, setCombinedTracks] = useRecoilState(CombinedTracks);
   const [page, setPage] = useState(1);
@@ -17,7 +17,7 @@ export function useInfiniteTracks(initialPageSize = 10) {
     setLoading(true);
     setError(null);
     try {
-      const resp = await axios.get<{ tracks: TrackInterface[]; hasMore: boolean }>(`${dev_url}/prtracks/mytracks`, {
+      const resp = await axios.get<{ tracks: TrackInterface[]; hasMore: boolean }>(`${backEnd_url}/prtracks/mytracks`, {
         params: { page: p, pageSize },
         withCredentials: true,
       });

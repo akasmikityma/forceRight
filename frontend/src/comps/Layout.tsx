@@ -2,32 +2,40 @@ import axios from "axios";
 import React, { useState, useRef, useEffect } from "react";
 import { BsLayoutTextSidebar } from "react-icons/bs";
 import Sidebar from "./Sidebar";
-import { authenticated } from "@/store/atoms";
+import { authenticated, userIdState } from "@/store/atoms";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import LogoutModal from "./LogoutModal";
 import { toast, ToastContainer } from 'react-toastify';
+// import { useSetRecoilState } from "recoil";
 import 'react-toastify/dist/ReactToastify.css';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const setUserIdState = useSetRecoilState(userIdState);
   const nav = useNavigate();
   const location = useLocation();
 
   const [authenticatedst, setAuthenticatedst] = useRecoilState(authenticated);
 
   const backEnd_url = "https://forceright-backend-1.onrender.com";
-  const dev_url = "http://localhost:8080";
+  // const dev_url = "http://localhost:8080";
+  
+  useEffect(()=>{
+    const raw = localStorage.getItem("userId");
+    if (raw) setUserIdState(Number(raw));
+  },[])
+  
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await axios.get(`${dev_url}/user/auth/me`, { withCredentials: true }); // Include cookies
+        const res = await axios.get(`${backEnd_url}/user/auth/me`, { withCredentials: true }); // Include cookies
         console.log(`checkAuth data`, JSON.stringify(res.data));
         if (res.status === 200) {
           setAuthenticatedst(true);
-          nav("/"); // Redirect authenticated user
+          nav("/home", { replace: true });
         } else {
           setAuthenticatedst(false); // Ensure state is updated if not authenticated
         }
@@ -40,15 +48,9 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     checkAuth();
   }, []);
 
-  // const handlelogout = async () => {
-  //   // alert("currently authenticated and u requested to get log out");
-  //   await fetch("/auth/logout", { method: "POST", credentials: "include" });
-  //   setAuthenticatedst(false); // Update the state to reflect that the user is logged out
-  //   nav("/login"); // Redirect to the login page
-  // };
   const handlelogout = async () => {
     try {
-      await axios.post(`${dev_url}/user/auth/logout`, {}, { withCredentials: true });
+      await axios.post(`${backEnd_url}/user/auth/logout`, {}, { withCredentials: true });
       setAuthenticatedst(false);
       toast.success("Logged out successfully");
       nav("/auth");
@@ -66,10 +68,10 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }
   };
   // Handle navigation to login
-  const getToAuth = () => {
-    alert("currently unauthenticated");
-    nav("/auth");
-  };
+  // const getToAuth = () => {
+  //   alert("currently unauthenticated");
+  //   nav("/auth");
+  // };
 
   // Add/remove event listener for clicks outside the sidebar
   useEffect(() => {
@@ -131,17 +133,6 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         </button>
       )}
 
-      {/* Header */}
-      {/* {!isLandingPage && (
-        <header className="fixed top-0 left-0 w-full h-14 bg-white shadow-md flex items-center px-6 border-b border-gray-300 z-40">
-          <button
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ml-auto"
-            onClick={authenticatedst ? handlelogout : getToAuth}
-          >
-            {authenticatedst ? "logout" : "login"}
-          </button>
-        </header>
-      )} */}
       {!isLandingPage && (
         <header className="fixed top-0 left-0 w-full h-14 bg-white shadow-md flex items-center px-6 border-b border-gray-300 z-40">
           <button

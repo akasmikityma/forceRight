@@ -1,5 +1,3 @@
-// a small card that has a text and a number and maybe an icon >> 
-// import React from 'react';
 
 const PocketInfo = ({ data }: { data: { name: string; count: number } }) => {
   return (

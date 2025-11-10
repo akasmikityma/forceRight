@@ -1,43 +1,13 @@
 import { useEffect } from "react";
-// import axios from "axios";
 import { 
   LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer 
 } from "recharts";
 import { ProblemsByRating } from "@/store/atoms";
 import { useRecoilValue } from "recoil";
-// Function to convert rating from text to number
-// const ratingMap: Record<string, number> = {
-//   ONE: 1,
-//   TWO: 2,
-//   THREE: 3,
-//   FOUR: 4,
-//   FIVE: 5,
-// };
 
 export default function RatingChart() {
-  // const [ratingData, setRatingData] = useState([]);
   const RatingWIthProbs = useRecoilValue(ProblemsByRating);
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await axios.get("http://localhost:3000/prtracks/getRatings");
-  //       console.log("ratingsData:", response.data.rating_data);
-
-  //       const formattedData = response.data.rating_data.map((item: any) => ({
-  //         date: new Date(item.createdAt).toISOString().split("T")[0], // Format as YYYY-MM-DD
-  //         rating: ratingMap[item.rating] || 0, // Convert rating string to number
-  //       }));
-  //       console.log(formattedData);
-  //       setRatingData(formattedData);
-  //     } catch (error) {
-  //       console.error("Error fetching rating data:", error);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
   useEffect(()=>{
-    // console.log(`ratIng DATA`,ratingData);
     console.log(`ratingsWithPROBS : `,RatingWIthProbs)
   })
   return (
@@ -55,7 +25,4 @@ export default function RatingChart() {
     </div>
   );
 }
-
-// change domain >> [1,5]
-// calculate average rating of all the tracks of a day >> 
 

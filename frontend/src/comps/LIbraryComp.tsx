@@ -1,16 +1,4 @@
-// import React from 'react'
-// import { FaFolder } from "react-icons/fa";
-// const LIbraryComp = ({name}:{name:string}) => {
-//   return (
-//     <div className='flex flex-row gap-4 justify-center items-center' >
-//         <FaFolder />
-//         <h3>{name}</h3>
-//     </div>
-//   )
-// }
 
-// export default LIbraryComp
-// import React from "react";
 import { FaFolder } from "react-icons/fa";
 
 const LIbraryComp = ({ name, onClick }: { name: string; onClick: () => void }) => {
