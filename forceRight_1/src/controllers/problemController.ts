@@ -627,3 +627,35 @@ export const deleteProblemTrack = async (req: Request, res: Response) => {
     return ;
 }
 };
+export const updateLongestStreak = async (req: Request, res: Response) => {
+  try {
+    const { userId, currentStreak } = req.body;
+    
+    console.log("userId is ",userId);
+    const User = await prisma.user.findUnique({
+      where: { id: userId }
+    });
+    if (!User) {
+      res.status(404).json({ msg: "User not found" });
+      return 
+    }
+    console.log("user is ",User.name);
+    // Only update if current streak is longer than stored longest streak
+    if (currentStreak > User.longestStreak) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: { longestStreak: currentStreak }
+      });
+    }
+
+    res.status(200).json({ 
+      msg: "Streak updated successfully",
+      longestStreak: Math.max(currentStreak, User.longestStreak)
+    });
+    return 
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Internal server error" });
+    return 
+}
+};

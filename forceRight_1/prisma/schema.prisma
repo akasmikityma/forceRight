@@ -19,6 +19,7 @@ model User{
   age Int?
   email String @unique
   password String
+  longestStreak Int @default(0)
   Problems Problem[]
   Libraries Library[] 
   createdAt DateTime @default(now())

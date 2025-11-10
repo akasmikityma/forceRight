@@ -127,7 +127,7 @@ export const signIn_Controller = async (req: Request, res: Response) => {
     // });
     
 
-    res.status(200).json({ msg: `Welcome back, ${found_user.name}!` });
+    res.status(200).json({ msg: `Welcome back, ${found_user.name}!`, id: found_user.id, name: found_user.name });
   } catch (err:any) {
     console.error(err);
     res.status(500).json({ msg: "Internal server error." });
@@ -198,7 +198,7 @@ export const signUp_Controller = async (req: Request, res: Response) => {
       maxAge: 4 * 60 * 60 * 1000,
     });
     
-    res.status(201).json({ msg: "User successfully signed up" });
+    res.status(201).json({ msg: "User successfully signed up", id: new_user.id, name: new_user.name });
   } catch (err:any) {
     console.error(err);
     res.status(500).json({ msg: "Server error" });

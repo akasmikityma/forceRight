@@ -1,5 +1,5 @@
 import Router from "express";
-import { getAllProblemsTrack ,deleteProblemTrack,createProblemTrack,getMyproblemTracks,getMyspecificTrack,updateLibraryParent,updateMySpecificTrack, getProblemsByDate, getRatingsEachDate, createLibrary, getMyLibraries, putTrackInLibrary, removeTrackFromLibrary,DeleteLibraryController} from "../controllers/problemController";
+import { getAllProblemsTrack ,deleteProblemTrack,createProblemTrack,getMyproblemTracks,getMyspecificTrack,updateLibraryParent,updateMySpecificTrack, getProblemsByDate, getRatingsEachDate, createLibrary, getMyLibraries, putTrackInLibrary, removeTrackFromLibrary,DeleteLibraryController, updateLongestStreak} from "../controllers/problemController";
 import { authOnProblemPost } from "../niddlewares/midware_OnProblem";
 const problem_Router = Router();
 problem_Router.get("/",getAllProblemsTrack);
@@ -16,4 +16,5 @@ problem_Router.post("/deleteLibrary",authOnProblemPost,DeleteLibraryController);
 problem_Router.post("/addToLib",authOnProblemPost,putTrackInLibrary);
 problem_Router.post("/removeFromLib",authOnProblemPost,removeTrackFromLibrary);
 problem_Router.post("/deleteTrack", authOnProblemPost, deleteProblemTrack);
+problem_Router.post("/updateStreak", authOnProblemPost, updateLongestStreak);
 export default problem_Router;
