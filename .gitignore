@@ -30,7 +30,7 @@ forceRight/forceRight_1/.cache/      # Ignore the cache directory (if any)
 forceRight/forceRight_1/prisma/.env  # Ignore .env files inside prisma folder
 forceRight/forceRight_1/prisma/client/ # Ignore Prisma Client files (generated)
 
-/tasks.txt
+tasks.txt
 # Optional: If you use Docker
 # docker-compose.override.yml
 # .dockerignore
