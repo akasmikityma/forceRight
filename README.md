@@ -37,10 +37,10 @@ forceRight helps you build a **log of problems + reflections**, so you can look 
 |----------------|------------|
 |![Dashboard](/AppDemo/dashboard.gif) | ![Track Entry](/AppDemo/addAndDeleteTrack.gif) | ![Analytics](/AppDemo/Analytics.gif) | ![Library](/AppDemo/Library.gif.gif)
 
-
 ## 📁 How It’s Structured
 
 Inside this repo you’ll find something like:
+
 ├─ frontend/ # (Optional) UI part if you build one
 ├─ forceRight_1/ # e.g., backend / core logic folder
 │ ├─ prisma/ # DB/schema layer (if used)
@@ -48,8 +48,6 @@ Inside this repo you’ll find something like:
 ├─ tasks.txt # simple list of problems / to-do entries
 ├─ .gitignore
 └─ README.md # this file
-You can adapt the structure as your workflow evolves.
-
 ---
 
 ## 🛠 How to Use
