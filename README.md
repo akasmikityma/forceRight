@@ -40,14 +40,15 @@ forceRight helps you build a **log of problems + reflections**, so you can look 
 ## 📁 How It’s Structured
 
 Inside this repo you’ll find something like:
-
-├─ frontend/ # (Optional) UI part if you build one
-├─ forceRight_1/ # e.g., backend / core logic folder
-│ ├─ prisma/ # DB/schema layer (if used)
-│ └─ …
-├─ tasks.txt # simple list of problems / to-do entries
+<pre>
+├─ frontend/
+├─ forceRight_1/
+│  ├─ prisma/
+│  └─ …
+├─ tasks.txt
 ├─ .gitignore
-└─ README.md # this file
+└─ README.md
+</pre>
 ---
 
 ## 🛠 How to Use
